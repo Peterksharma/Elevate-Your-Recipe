@@ -11,7 +11,7 @@ function findRecipeList() {
       console.log('3', sibling);
       
       while (sibling) {
-        if (sibling.tagName === 'UL' || sibling.tagName === 'OL') {
+        if (sibling.firstChild.tagName === 'UL' || sibling.firstChild.tagName === 'OL') {
           return sibling.querySelectorAll('li');
         }
         
