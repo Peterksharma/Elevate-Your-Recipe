@@ -1,21 +1,20 @@
 {
-    "manifest_version": 3,
-    "name": "Recipe Finder",
-    "version": "1.1",
-    "permissions": ["activeTab", "scripting"],
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "images/icon1.png",
-        "48": "images/icon2.png",
-        "128": "images/icon3.png"
-      }
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://*/*", "http://*/*"],
-        "js": ["script.js"]
-
-      }
-    ]
-  }
+  "manifest_version": 3,
+  "name": "Recipe Finder",
+  "version": "1.2",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon1.png",
+      "48": "images/icon2.png",
+      "128": "images/icon3.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["script.js"]
+    }
+  ]
+}

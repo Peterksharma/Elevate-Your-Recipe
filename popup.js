@@ -1,25 +1,18 @@
-// document.getElementById('find-recipe').addEventListener('click', () => {
-//     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-//       const activeTab = tabs[0];
-//       chrome.tabs.sendMessage(activeTab.id, { action: 'findRecipe' });
-//       // chrome.scripting.executeScript(
-//         {
-//           target: { tabId: activeTab.id },
-//           function: extractRecipe,
-//         },
-//         () => {
-//           if (chrome.runtime.lastError) {
-//             console.error(chrome.runtime.lastError);
-//           }
-//         }
-//       );
-//     });
-//   });
-
 document.getElementById('find-recipe').addEventListener('click', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     const activeTab = tabs[0];
     chrome.tabs.sendMessage(activeTab.id, { action: 'findRecipe' });
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: activeTab.id },
+        function: extractRecipe,
+      },
+      () => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      }
+    );
   });
 });
 
