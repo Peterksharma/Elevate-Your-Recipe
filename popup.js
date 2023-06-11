@@ -1,3 +1,12 @@
+var slider = document.getElementById("elevation");
+var output = document.getElementById("rangeValue");
+
+//Display Slider Value
+output.innerHTML = slider.value;
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+
 document.getElementById('find-recipe').addEventListener('click', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     const activeTab = tabs[0];
@@ -16,6 +25,25 @@ document.getElementById('find-recipe').addEventListener('click', () => {
   });
 });
 
+document.getElementById("find-location").addEventListener('click', () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        output.innerHTML
+        // Now you can use these coordinates to feed your Elevation API
+      },
+      (error) => {
+        console.log(`Geolocation error: ${error.message}`);
+      }
+    );
+  } else {
+    console.log("Geolocation is not supported by this browser.");
+  }
+  
+})
+
 // const searchCredentials = /(\d+\s*(?:-\s*\d+)?\s*(?:\d+\/\d+)?)\s*(cup|cups|oz|ounce|ounces|gram|grams|g|teaspoon|tsp|tablespoon|tbsp|lb|lbs|kg|ml|l|pinch|dash|quart|qt|pint|pt|gallon|gal|mg|)/g;
 // //searches for  AP, All Purpose Flour, Bread Flour, Flour, Cake Flour, Pastry Flour, Whole Wheat Flour, and Self Rising Flouw
 // const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
@@ -29,8 +57,9 @@ function extractRecipe() {
 
   // Regular expressions for search criteria
   const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
-  
-  const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|Cup|Cups|oz|Ounce|floz|Floz|Ounces|ounces|ounce|gram|Gram|grams|Grams|g|G|teaspoon|Teaspoons|tsp|tablespoon|Tablespoon|tbsp)/g;
+  const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/g;
+
+  // const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|Cup|Cups|oz|Ounce|floz|Floz|Ounces|ounces|ounce|gram|Gram|grams|Grams|g|G|teaspoon|Teaspoons|tsp|tablespoon|Tablespoon|tbsp)/g;
   const searchRiser = /(baking\s*powder|baking\s*soda|yeast)/i;
   const searchLiquid = /(?:warm|cold\s+)?(?:water|water|milk|scalded\s+milk)/i;
   const searchSugar = /(Sugar|Granulated\s*Sugar|White\s*Sugar|Brown\s*Sugar|Light\s*Brown\s*Sugar|Dark\s*Brown\s*Sugar|Powdered\s*Sugar|Confectioners'\s*Sugar|Cane\s*Sugar|Raw\s*Sugar|Turbinado\s*Sugar|Demerara\s*Sugar|Muscovado\s*Sugar|Superfine\s*Sugar|Coconut\s*Sugar|Palm\s*Sugar|Date\s*Sugar|Maple\s*Sugar|Baker\s*Sugar|\w*\s*Sugar)/gi;
@@ -107,7 +136,5 @@ function extractRecipe() {
   } else {
     console.error('Instructions not found.');
   }
-  
-  
-  
 }
+
