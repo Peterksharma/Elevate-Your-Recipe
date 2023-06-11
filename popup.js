@@ -29,7 +29,8 @@ function extractRecipe() {
 
   // Regular expressions for search criteria
   const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
-  const  measurementRegex = /(\d+\s*(?:\d+\/\d+)?)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/g;
+  
+  const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|Cup|Cups|oz|Ounce|floz|Floz|Ounces|ounces|ounce|gram|Gram|grams|Grams|g|G|teaspoon|Teaspoons|tsp|tablespoon|Tablespoon|tbsp)/g;
   const searchRiser = /(baking\s*powder|baking\s*soda|yeast)/i;
   const searchLiquid = /(?:warm|cold\s+)?(?:water|water|milk|scalded\s+milk)/i;
   const searchSugar = /(Sugar|Granulated\s*Sugar|White\s*Sugar|Brown\s*Sugar|Light\s*Brown\s*Sugar|Dark\s*Brown\s*Sugar|Powdered\s*Sugar|Confectioners'\s*Sugar|Cane\s*Sugar|Raw\s*Sugar|Turbinado\s*Sugar|Demerara\s*Sugar|Muscovado\s*Sugar|Superfine\s*Sugar|Coconut\s*Sugar|Palm\s*Sugar|Date\s*Sugar|Maple\s*Sugar|Baker\s*Sugar|\w*\s*Sugar)/gi;
@@ -45,6 +46,8 @@ function extractRecipe() {
     console.log('Flour Amounts:');
     IngredientAmounts.forEach((ingredient, index) => {
       var ingredientText = ingredient.textContent.trim();
+      searchFlour.lastIndex = 0;
+      measurementRegex.lastIndex = 0;
       if (searchFlour.test(ingredientText) && measurementRegex.test(ingredientText)) {
         console.log(`${index + 1}. ${ingredientText}`);
       }
