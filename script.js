@@ -1,7 +1,7 @@
 
 function findRecipeList() {
   const container = document.querySelectorall('body, ol, li, ul');
-  console.log(container)
+  // console.log(container)
   const recipeLists = []; // make an empty array to hold the recipe lists
 
   if (container) {
@@ -39,7 +39,7 @@ function findRecipeList() {
 
 // Listen for the message from the popup
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  console.log(request.action);
+  // console.log(request.action);
   if (request.action === 'findRecipe') {
     var recipeListItems = findRecipeList();
     console.log('5', recipeListItems);
@@ -59,7 +59,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // Listen for the message from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(request.action)
+  // console.log(request.saction)
   if (request.action === 'findRecipe') {
     var recipeListItems = findRecipeList();
     console.log('5', recipeListItems);
