@@ -11,13 +11,10 @@
       "128": "images/icon3.png"
     }
   },
-  "background": {
-    "service_worker": "script.js"
-  },
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "js": ["popup.js"]
+      "js": ["script.js"]
     }
   ]
 }
