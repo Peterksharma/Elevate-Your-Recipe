@@ -2,7 +2,7 @@
 
 ## Flour
 
-For all altitudes, add up to 2 tablespoons of flour per cup.
+1For all altitudes, add up to 2 tablespoons of flour per cup.
 
 ## Leavening Agents
 
