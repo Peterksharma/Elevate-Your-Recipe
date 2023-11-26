@@ -1,10 +1,98 @@
 :root {
-    --primary: black;
+    /* Define a primary color scheme and secondary colors for better design */
+    --primary: #4a90e2; /* A modern blue */
+    --secondary: #f8f8f8; /* Light grey for backgrounds */
+    --thirdary: #a3a3a3; 
+    --text-color: #333; /* Darker text for better readability */
+    --button-color: #4CAF50; /* A green that stands out for buttons */
 }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    min-width: 400px;
-    min-height: 700px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
+    background-color: var(--secondary); /* Light background for ease of reading */
+    color: var(--text-color); /* Standard text color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 300px;
+    min-height: 500px;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in width and height */
+    border: 2px solid var(--thirdary); /* Add a solid border */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Subtle shadow for depth */
+}
+
+#logo {
+    width: 80%; /* Adjust logo size */
+    margin-bottom: 20px;
+    border-radius: 10px; /* Add rounded corners to the logo for a softer look */
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+    transition: transform 0.3s ease; /* Smooth transition for hover effects */
+}
+
+#logo:hover {
+    transform: scale(1.05); /* Slightly increase size on hover for interactive feel */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Increase shadow on hover for more depth */
+}
+
+
+input[type=range] {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 80%; /* Full width */
+    margin: 10px 0;
+    background: var(--primary); /* Slider track */
+    border-radius: 10px; /* Adjust as needed */
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    border-radius: 50%; /* Circular handle */
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+
+}
+
+input[type=range]::-moz-range-thumb {
+    width: 25px; 
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+
+}
+
+span {
+    display: block; /* Make spans take a full line */
+    text-align: center; /* Center align text */
+    margin: 10px 0; /* Add some space around the text */
+}
+
+#find-recipe {
+    background-color: var(--button-color); /* Button color */
+    color: white;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px; /* Rounded corners for the button */
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+
+}
+#find-recipe:hover {
+    background-color: var(--primary); /* Button color */
+
 }

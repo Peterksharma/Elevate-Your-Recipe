@@ -25,50 +25,28 @@ document.getElementById('find-recipe').addEventListener('click', () => {
   });
 });
 
-// document.getElementById("find-location").addEventListener('click', () => {
-//   if (navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(
-//       (position) => {
-//         const { latitude, longitude } = position.coords;
-//         console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-//         output.innerHTML
-//         // Now you can use these coordinates to feed your Elevation API
-//       },
-//       (error) => {
-//         console.log(`Geolocation error: ${error.message}`);
-//       }
-//     );
-//   } else {
-//     console.log("Geolocation is not supported by this browser.");
-//   }
-  
-// })
-
-// const searchCredentials = /(\d+\s*(?:-\s*\d+)?\s*(?:\d+\/\d+)?)\s*(cup|cups|oz|ounce|ounces|gram|grams|g|teaspoon|tsp|tablespoon|tbsp|lb|lbs|kg|ml|l|pinch|dash|quart|qt|pint|pt|gallon|gal|mg|)/g;
-// //searches for  AP, All Purpose Flour, Bread Flour, Flour, Cake Flour, Pastry Flour, Whole Wheat Flour, and Self Rising Flouw
-// const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
-// //searches for sugar, granulated sugar, white sugar, brown sugar, light brown sugar, dark brown sugar, powdered sugar, confectioners sugar, cane sugar, raw sugar, turbinado sugar, demerara sugar, muscavado sugar, super fine sugar, coconut sugar, palm sugar, date sugar, maple sugar, baker sugar and with each sugar with a s after the name (baker + bakers sugar)
-// const searchSugar = /(Sugar|Granulated\s*Sugar|White\s*Sugar|Brown\s*Sugar|Light\s*Brown\s*Sugar|Dark\s*Brown\s*Sugar|Powdered\s*Sugar|Confectioners'\s*Sugar|Cane\s*Sugar|Raw\s*Sugar|Turbinado\s*Sugar|Demerara\s*Sugar|Muscovado\s*Sugar|Superfine\s*Sugar|Coconut\s*Sugar|Palm\s*Sugar|Date\s*Sugar|Maple\s*Sugar|Baker\s*Sugar|\w*\s*Sugar)/gi;
-
 function extractRecipe() {
   const recipeTitle = document.querySelector('h1');
+  if (recipeTitle) {
+    recipeTitle.style.color = 'orange';
+  }
+  
   const IngredientAmounts = document.querySelectorAll('ul li');
+  IngredientAmounts.forEach(ingredient => {
+    ingredient.style.color = 'red';
+  });
+
   const instructionsList = document.querySelectorAll('ol li');
+  instructionsList.forEach(instruction => {
+    instruction.style.color = 'green';
+  });
 
   // Regular expressions for search criteria
   const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
-  // ****breakup the units of the amounts
   const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/g;
-  // const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s/g;
-  // const measurementUnits = /(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/g
-  //***maybe add unicode fractions to the measurement search
-  // const uniFractions = (½|⅓|⅔|¼|¾|⅕|⅖|⅗|⅘|⅙|⅚|⅛|⅜|⅝|⅞)
-  // const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|Cup|Cups|oz|Ounce|floz|Floz|Ounces|ounces|ounce|gram|Gram|grams|Grams|g|G|teaspoon|Teaspoons|tsp|tablespoon|Tablespoon|tbsp)/g;
   const searchRiser = /(baking\s*powder|baking\s*soda|yeast)/i;
   const searchLiquid = /(?:warm|cold\s+)?(?:water|water|milk|scalded\s+milk)/i;
-  //***add caster sugar to the mix
   const searchSugar = /(Sugar|Granulated\s*Sugar|White\s*Sugar|Brown\s*Sugar|Light\s*Brown\s*Sugar|Dark\s*Brown\s*Sugar|Powdered\s*Sugar|Confectioners'\s*Sugar|Cane\s*Sugar|Raw\s*Sugar|Turbinado\s*Sugar|Demerara\s*Sugar|Muscovado\s*Sugar|Superfine\s*Sugar|Coconut\s*Sugar|Palm\s*Sugar|Date\s*Sugar|Maple\s*Sugar|Baker\s*Sugar|\w*\s*Sugar)/gi;
-
 
   if (recipeTitle) {
     console.log('Recipe Title:', recipeTitle.textContent.trim());
@@ -76,39 +54,55 @@ function extractRecipe() {
     console.error('Recipe title not found.');
   }
 
+  //Search for the flour
+  // if (IngredientAmounts.length > 0) {
+  //   console.log('Flour Amounts:');
+  //   IngredientAmounts.forEach((ingredient, index) => {
+  //     var ingredientText = ingredient.textContent.trim();
+  //     searchFlour.lastIndex = 0;
+  //     measurementRegex.lastIndex = 0;
+  //     if (searchFlour.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
+  //       console.log(`${index + 1}. ${ingredientText}`);
+  //     }
+  //   });
+  // } else {
+  //   console.error('Ingredients not found.');
+  // }
+
   if (IngredientAmounts.length > 0) {
     console.log('Flour Amounts:');
-    IngredientAmounts.forEach((ingredient, index) => {
-      var ingredientText = ingredient.textContent.trim();
+    for (let i = 0; i < IngredientAmounts.length; i++) {
+      var ingredientText = IngredientAmounts[i].textContent.trim();
       searchFlour.lastIndex = 0;
       measurementRegex.lastIndex = 0;
       if (searchFlour.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
-        console.log(`${index + 1}. ${ingredientText}`);
-        // document.getElementById('flourBeforeAdjustment').textContent = ingredientText;
-        // output.innerHTML = ingredientText;
+        console.log(`${i + 1}. ${ingredientText}`);
+        break;
       }
-    });
+    }
   } else {
     console.error('Ingredients not found.');
   }
-
+  
+  
+  //Search for the Leavner
   if (IngredientAmounts.length > 0) {
-    console.log('Leavener Amounts:');
+    console.log('Leavner Amounts:');
     IngredientAmounts.forEach((ingredient, index) => {
       var ingredientText = ingredient.textContent.trim();
-      if (searchRiser.test(ingredientText) && measurementRegex.test(ingredientText)) {
+      if (searchRiser.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
         console.log(`${index + 1}. ${ingredientText}`);
       }
     });
   } else {
     console.error('Ingredients not found.');
   }
-
+  //Search for the Liquids
   if (IngredientAmounts.length > 0) {
     console.log('Liquid Amounts:');
     IngredientAmounts.forEach((ingredient, index) => {
       var ingredientText = ingredient.textContent.trim();
-      if (searchLiquid.test(ingredientText) && measurementRegex.test(ingredientText)) {
+      if (searchLiquid.test(ingredientText) && measurementRegex.test(ingredientText)&& ingredientText.length < 150) {
         console.log(`${index + 1}. ${ingredientText}`);
       }
     });
@@ -120,28 +114,60 @@ function extractRecipe() {
     console.log('Sugar Amounts:');
     IngredientAmounts.forEach((ingredient, index) => {
       var ingredientText = ingredient.textContent.trim();
-      if (searchSugar.test(ingredientText) && measurementRegex.test(ingredientText)) {
+      if (searchSugar.test(ingredientText) && measurementRegex.test(ingredientText)&& ingredientText.length < 150) {
         console.log(`${index + 1}. ${ingredientText}`);
       }
     });
   } else {
     console.error('Ingredients not found.');
   }
-  
 
-  if (instructionsList.length > 0) {
-    console.log('Instructions:');
-    instructionsList.forEach((instruction, index) => {
-      if (instruction.tagName.toLowerCase() !== 'img') {
-        var instructionText = instruction.textContent.trim();
-        var cleanedText = instructionText.replace(/<img[^>]+>/g, '');
-        // if (cleanedText !== 'Kelly Hamilton') {
-        console.log(`${index + 1}. ${cleanedText}`);
-        // }
+  //WORKING ON GETTING THE INSTRUCTIONS
+  //The idea is loop through the headers looking for the instructions
+  let instructionHeader = null;
+  for (let i = 1; i <= 6; i++) {
+    const headers = document.querySelectorAll(`h${i}`);
+    headers.forEach(header => {
+      if (header.textContent.toLowerCase().includes('instruction')) {
+        instructionHeader = header;
       }
     });
+    if (instructionHeader) break;
+  }
+
+  if (instructionHeader) {
+    let element = instructionHeader.nextElementSibling;
+    console.log('Instructions:');
+
+    while (element) {
+      if (element.tagName.toLowerCase() === 'h1' || element.tagName.toLowerCase() === 'h2' || element.tagName.toLowerCase() === 'h3') {
+        break; // Stop if the next header of the same or higher level is found
+      }
+
+      if (element.textContent.trim()) {
+        console.log(element.textContent.trim());
+      }
+
+      element = element.nextElementSibling;
+    }
   } else {
-    console.error('Instructions not found.');
+    console.error('Instructions header not found.');
   }
 }
+
+  // if (instructionsList.length > 0) {
+  //   console.log('Instructions:');
+  //   instructionsList.forEach((instruction, index) => {
+  //     if (instruction.tagName.toLowerCase() !== 'img') {
+  //       var instructionText = instruction.textContent.trim();
+  //       var cleanedText = instructionText.replace(/<img[^>]+>/g, '');
+  //       // if (cleanedText !== 'Kelly Hamilton') {
+  //       console.log(`${index + 1}. ${cleanedText}`);
+  //       // }
+  //     }
+  //   });
+  // } else {
+  //   console.error('Instructions not found.');
+  // }
+// }
 
