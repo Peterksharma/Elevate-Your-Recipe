@@ -7,6 +7,28 @@
     --button-color: #4CAF50; /* A green that stands out for buttons */
 }
 
+h2 {
+    color:#03264e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
+    font-kerning: auto;
+    font-optical-sizing: auto;
+    font-variant-caps: all-petite-caps;
+    font-weight: 200;
+    margin-bottom: -.5rem;
+
+}
+
+#elevationdisplay {
+    color:#03264e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
+    font-kerning: auto;
+    font-optical-sizing: auto;
+    font-variant-caps: all-petite-caps;
+    font-weight: 200;
+    margin-bottom: -.5rem;
+    padding-top: -.5rem;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */

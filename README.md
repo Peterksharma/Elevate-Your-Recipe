@@ -1,6 +1,6 @@
 # Elevate Your Recipe
 
-Elevate Your Recipe is a Google Chrome extension designed to enhance your cooking experience. It works by scraping recipes from webpages and then adjusting them based on user input. This tool is perfect for those who love to experiment with baking and want to personalize recipes they find online to the elevation they are baking at. This software is still in development
+Elevate Your Recipe is a Google Chrome extension designed to enhance your cooking experience. It works by scraping recipes from webpages and then adjusting them based on user input. This tool is perfect for those who love to experiment with baking and want to personalize recipes they find online to the elevation they are baking at. This software is still in development.
 
 
 ## Features

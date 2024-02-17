@@ -84,7 +84,6 @@ function extractRecipe() {
     console.error('Ingredients not found.');
   }
   
-  
   //Search for the Leavner
   if (IngredientAmounts.length > 0) {
     console.log('Leavner Amounts:');
