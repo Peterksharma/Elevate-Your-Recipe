@@ -1,6 +1,6 @@
 
 function findRecipeList() {
-  const container = document.querySelectorall('body, ol, li, ul');
+  const container = document.querySelectorAll('body, ol, li, ul');
   // console.log(container)
   const recipeLists = []; // make an empty array to hold the recipe lists
 
