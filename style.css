@@ -1,5 +1,4 @@
 :root {
-    /* Define a primary color scheme and secondary colors for better design */
     --primary: #4a90e2; /* A modern blue */
     --secondary: #f8f8f8; /* Light grey for backgrounds */
     --thirdary: #a3a3a3; 
@@ -7,51 +6,37 @@
     --button-color: #4CAF50; /* A green that stands out for buttons */
 }
 
-h2 {
-    color:#03264e;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
-    font-kerning: auto;
-    font-optical-sizing: auto;
-    font-variant-caps: all-petite-caps;
-    font-weight: 200;
-    margin-bottom: -.5rem;
-
+body, button, input[type=range], span {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
 }
 
-#elevationdisplay {
-    color:#03264e;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
-    font-kerning: auto;
-    font-optical-sizing: auto;
-    font-variant-caps: all-petite-caps;
-    font-weight: 200;
-    margin-bottom: -.5rem;
-    padding-top: -.5rem;
+html, body {
+    width: 600px; /* Set the width of the popup */
+    height: 800px; /* Set the height of the popup */
+    margin: 0;
+    padding: 0;
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font */
-    background-color: var(--secondary); /* Light background for ease of reading */
-    color: var(--text-color); /* Standard text color */
+    background-color: var(--secondary);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 300px;
-    min-height: 500px;
-    padding: 20px;
-    box-sizing: border-box; /* Include padding in width and height */
-    border: 2px solid var(--thirdary); /* Add a solid border */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Subtle shadow for depth */
+
+    box-sizing: border-box;
+    border: 2px solid var(--thirdary);
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
 
 #logo {
-    width: 80%; /* Adjust logo size */
+    width: 80%;
     margin-bottom: 20px;
-    border-radius: 10px; /* Add rounded corners to the logo for a softer look */
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
-    transition: transform 0.3s ease; /* Smooth transition for hover effects */
+    border-radius: 10px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
 #logo:hover {
@@ -71,50 +56,105 @@ input[type=range] {
 
 }
 
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; 
-    appearance: none;
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    background: #4CAF50; /* Green background */
-    cursor: pointer; /* Cursor on hover */
-    border-radius: 50%; /* Circular handle */
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
-
-}
-
+input[type=range]::-webkit-slider-thumb,
 input[type=range]::-moz-range-thumb {
-    width: 25px; 
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
     height: 25px;
-    background: #4CAF50;
+    background: var(--button-color);
     cursor: pointer;
     border-radius: 50%;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
-
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
-span {
-    display: block; /* Make spans take a full line */
-    text-align: center; /* Center align text */
-    margin: 10px 0; /* Add some space around the text */
+span, #rangeValue {
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+}
+
+
+h1, h2 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1rem 0;
 }
 
 #find-recipe {
-    background-color: var(--button-color); /* Button color */
+    background-color: var(--button-color);
     color: white;
     border: none;
     padding: 15px 32px;
     text-align: center;
-    text-decoration: none;
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 4px; /* Rounded corners for the button */
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
-
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
+
 #find-recipe:hover {
-    background-color: var(--primary); /* Button color */
-
+    background-color: #397a40; /* Example of a darker green */
 }
+
+/* #recipe, #instructions {
+    width: 80%;
+    margin: 1rem auto;
+    background-color: var(--secondary);
+    padding: 1rem;
+    border-radius: 5px;
+} */
+
+footer {
+    background-color: var(--primary);
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+    position: relative;
+    clear: both;
+}
+
+
+
+#elevation-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#elevation-control span,
+#elevation-control input[type=range],
+#elevation-control #rangeValue {
+    margin: 10px 0;
+}
+
+
+input[type=range] {
+    width: 100%; /* Full width within the container */
+}
+
+#find-recipe {
+    /* Existing styles */
+    /* Add hover effect */
+    transition: background-color 0.3s ease;
+}
+
+#find-recipe:hover {
+    background-color: darken(var(--button-color), 10%); /* Darken the button color on hover */
+}
+
+footer {
+    position: relative; /* Changed from absolute to relative */
+    clear: both; /* Ensures it doesn't overlap with other content */
+}
+

@@ -29,10 +29,13 @@ function extractRecipe() {
   const recipeTitle = document.querySelector('h1');
   if (recipeTitle) {
     recipeTitle.style.color = 'orange';
+    console.log('Recipe Title:', recipeTitle.textContent.trim());
+  } else {
+    console.error('Recipe title not found.');
   }
   
-  const IngredientAmounts = document.querySelectorAll('ul li');
-  IngredientAmounts.forEach(ingredient => {
+  const ingredientAmounts = document.querySelectorAll('ul li');
+  ingredientAmounts.forEach(ingredient => {
     ingredient.style.color = 'red';
   });
 
@@ -41,132 +44,134 @@ function extractRecipe() {
     instruction.style.color = 'green';
   });
 
-  // Regular expressions for search criteria
-  const searchFlour = /(AP|All\s*Purpose|All-Purpose|Bread|Bread\s*Flour|Flour|Cake|Cake\s*Flour|Pastry|Pastry\s*Flour|Whole\s*Wheat|Whole\s*Wheat\s*Flour|Self-Rising|Self-Rising\s*Flour|\w*\s*Flour)/gi;
-  const  measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/g;
-  const searchRiser = /(baking\s*powder|baking\s*soda|yeast)/i;
-  const searchLiquid = /(?:warm|cold\s+)?(?:water|water|milk|scalded\s+milk)/i;
-  const searchSugar = /(Sugar|Granulated\s*Sugar|White\s*Sugar|Brown\s*Sugar|Light\s*Brown\s*Sugar|Dark\s*Brown\s*Sugar|Powdered\s*Sugar|Confectioners'\s*Sugar|Cane\s*Sugar|Raw\s*Sugar|Turbinado\s*Sugar|Demerara\s*Sugar|Muscovado\s*Sugar|Superfine\s*Sugar|Coconut\s*Sugar|Palm\s*Sugar|Date\s*Sugar|Maple\s*Sugar|Baker\s*Sugar|\w*\s*Sugar)/gi;
+  //Bread?
+  //This is the filter for finding things.
+  const searchFlour = /(AP|All(-|\s*)Purpose|Bread|Cake|Pastry|Whole(-|\s*)Wheat|Self(-|\s*)Rising)?\s*Flour|Flour/gi;
+  const measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/gi;
+  const searchRiser = /baking\s*(powder|soda)|yeast/i;
+  const searchLiquid = /(?:warm|cold\s+)?(water|milk|scalded\s+milk)/i;
+  const searchSugar = /(?:Granulated|White|Brown|Light\s*Brown|Dark\s*Brown|Powdered|Confectioners'|Cane|Raw|Turbinado|Demerara|Muscovado|Superfine|Coconut|Palm|Date|Maple|Baker)?\s*Sugar|Sugar/gi;
 
-  if (recipeTitle) {
-    console.log('Recipe Title:', recipeTitle.textContent.trim());
-  } else {
-    console.error('Recipe title not found.');
-  }
-
-  //Search for the flour
-  // if (IngredientAmounts.length > 0) {
-  //   console.log('Flour Amounts:');
-  //   IngredientAmounts.forEach((ingredient, index) => {
-  //     var ingredientText = ingredient.textContent.trim();
-  //     searchFlour.lastIndex = 0;
-  //     measurementRegex.lastIndex = 0;
-  //     if (searchFlour.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
-  //       console.log(`${index + 1}. ${ingredientText}`);
-  //     }
-  //   });
-  // } else {
-  //   console.error('Ingredients not found.');
-  // }
-
-  if (IngredientAmounts.length > 0) {
-    console.log('Flour Amounts:');
-    for (let i = 0; i < IngredientAmounts.length; i++) {
-      var ingredientText = IngredientAmounts[i].textContent.trim();
-      searchFlour.lastIndex = 0;
-      measurementRegex.lastIndex = 0;
-      if (searchFlour.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
-        console.log(`${i + 1}. ${ingredientText}`);
-        break;
-      }
+  function searchIngredients(searchTerm, ingredientType) {
+    if (ingredientAmounts.length > 0) {
+      console.log(`${ingredientType} Amounts:`);
+      ingredientAmounts.forEach((ingredient, index) => {
+        const ingredientText = ingredient.textContent.trim();
+        searchTerm.lastIndex = 0; 
+        measurementRegex.lastIndex = 0;
+  
+        if (searchTerm.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150 && !ingredientText.match(/says:/)) {
+          console.log(`${index + 1}. ${ingredientText}`);
+        }
+      });
+    } else {
+      console.error('Ingredients not found.');
     }
-  } else {
-    console.error('Ingredients not found.');
   }
   
-  //Search for the Leavner
-  if (IngredientAmounts.length > 0) {
-    console.log('Leavner Amounts:');
-    IngredientAmounts.forEach((ingredient, index) => {
-      var ingredientText = ingredient.textContent.trim();
-      if (searchRiser.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150) {
-        console.log(`${index + 1}. ${ingredientText}`);
-      }
-    });
-  } else {
-    console.error('Ingredients not found.');
-  }
-  //Search for the Liquids
-  if (IngredientAmounts.length > 0) {
-    console.log('Liquid Amounts:');
-    IngredientAmounts.forEach((ingredient, index) => {
-      var ingredientText = ingredient.textContent.trim();
-      if (searchLiquid.test(ingredientText) && measurementRegex.test(ingredientText)&& ingredientText.length < 150) {
-        console.log(`${index + 1}. ${ingredientText}`);
-      }
-    });
-  } else {
-    console.error('Ingredients not found.');
-  }
+  
 
-  if (IngredientAmounts.length > 0) {
-    console.log('Sugar Amounts:');
-    IngredientAmounts.forEach((ingredient, index) => {
-      var ingredientText = ingredient.textContent.trim();
-      if (searchSugar.test(ingredientText) && measurementRegex.test(ingredientText)&& ingredientText.length < 150) {
-        console.log(`${index + 1}. ${ingredientText}`);
-      }
-    });
-  } else {
-    console.error('Ingredients not found.');
-  }
+  searchIngredients(searchFlour, 'Flour');
+  searchIngredients(searchRiser, 'Leavener');
+  searchIngredients(searchLiquid, 'Liquid');
+  searchIngredients(searchSugar, 'Sugar');
+
 
   //WORKING ON GETTING THE INSTRUCTIONS
-  //The idea is loop through the headers looking for the instructions
-  let instructionHeader = null;
-  for (let i = 1; i <= 6; i++) {
-    const headers = document.querySelectorAll(`h${i}`);
-    headers.forEach(header => {
-      if (header.textContent.toLowerCase().includes('instruction')) {
-        instructionHeader = header;
-      }
-    });
-    if (instructionHeader) break;
+  function findInstructionsHeader(ingredientsHeader) {
+  let currentElement = ingredientsHeader.nextElementSibling;
+  while (currentElement) {
+    if (currentElement.tagName.toLowerCase() === ingredientsHeader.tagName.toLowerCase() &&
+        currentElement.textContent.toLowerCase().includes('instruction')) {
+      return currentElement;
+    }
+    currentElement = currentElement.nextElementSibling;
   }
+  return null;
+}
 
-  if (instructionHeader) {
-    let element = instructionHeader.nextElementSibling;
+// function extractInstructions() {
+//   // Try to find the instructions container by class name first
+//   const instructionsContainer = document.querySelector('.tasty-recipes-instructions');
+//   let instructionsList = null;
+
+//   if (instructionsContainer) {
+//     instructionsList = instructionsContainer.querySelector('ol, ul');
+//   } else {
+//     // Fallback to the original method
+//     const headers = document.querySelectorAll('h1, h2, h3, h4');
+//     let instructionsHeader = null;
+
+//     headers.forEach(header => {
+//       if (header.textContent.trim().toLowerCase() === 'instructions') {
+//         instructionsHeader = header;
+//       }
+//     });
+
+//     if (instructionsHeader) {
+//       let currentElement = instructionsHeader.nextElementSibling;
+//       while (currentElement) {
+//         if (currentElement.tagName.toLowerCase() === 'ol' || currentElement.tagName.toLowerCase() === 'ul') {
+//           instructionsList = currentElement;
+//           break;
+//         }
+//         currentElement = currentElement.nextElementSibling;
+//       }
+//     }
+//   }
+
+//   if (instructionsList) {
+//     const instructionSteps = instructionsList.querySelectorAll('li');
+//     console.log('Instructions:');
+
+//     instructionSteps.forEach((step, index) => {
+//       const stepText = step.textContent.trim().replace(/\s+/g, ' ');
+//       console.log(`${index + 1}. ${stepText}`);
+//     });
+//   } else {
+//     console.error('Instructions list not found.');
+//   }
+// }
+
+// extractInstructions();
+
+function extractInstructions() {
+  const possibleHeaders = document.querySelectorAll('h1, h2, h3, h4, h5, h6, div');
+  let instructionsList = null;
+
+  possibleHeaders.forEach(header => {
+    const headerText = header.textContent.trim().toLowerCase();
+    console.log('Checking header:', headerText); // Diagnostic log
+
+    if (headerText.includes('instruction') || headerText.includes('step')) {
+      let currentElement = header;
+      let depth = 0;
+      const maxDepth = 10; // Increased max depth
+
+      while (depth < maxDepth && currentElement) {
+        if (currentElement.tagName.toLowerCase() === 'ol' || currentElement.tagName.toLowerCase() === 'ul') {
+          instructionsList = currentElement;
+          break;
+        }
+        currentElement = currentElement.nextElementSibling || currentElement.parentElement;
+        depth++;
+      }
+    }
+  });
+
+  if (instructionsList) {
+    const instructionSteps = instructionsList.querySelectorAll('li');
     console.log('Instructions:');
 
-    while (element) {
-      if (element.tagName.toLowerCase() === 'h1' || element.tagName.toLowerCase() === 'h2' || element.tagName.toLowerCase() === 'h3') {
-        break; // Stop if the next header of the same or higher level is found
-      }
-
-      if (element.textContent.trim()) {
-        console.log(element.textContent.trim());
-      }
-
-      element = element.nextElementSibling;
-    }
+    instructionSteps.forEach((step, index) => {
+      const stepText = step.textContent.trim().replace(/\s+/g, ' ');
+      console.log(`${index + 1}. ${stepText}`);
+    });
   } else {
-    console.error('Instructions header not found.');
+    console.error('Instructions list not found.');
   }
 }
 
-  // if (instructionsList.length > 0) {
-  //   console.log('Instructions:');
-  //   instructionsList.forEach((instruction, index) => {
-  //     if (instruction.tagName.toLowerCase() !== 'img') {
-  //       var instructionText = instruction.textContent.trim();
-  //       var cleanedText = instructionText.replace(/<img[^>]+>/g, '');
-  //       // if (cleanedText !== 'Kelly Hamilton') {
-  //       console.log(`${index + 1}. ${cleanedText}`);
-  //       // }
-  //     }
-  //   });
-  // } else {
-  //   console.error('Instructions not found.');
-  // }
-// }
+extractInstructions();
 
+}

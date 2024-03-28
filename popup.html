@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./style.css">
   <title>Elevate Your Recipe</title>
 </head>
+
 <body>
-  <img src="./images/logo.png" alt="Elevate Your Recipe logo that is a mountain and text" id="logo">
-  <span>Elevation</span>
-  0 Feet <input type="range" id="elevation" name="Elevation" min="0" max="15000" step="500" value="0"> 10,000 feet
-  <span id="rangeValue">0</span>Feet
-  <button id="find-recipe">Adjust your recipe!</button>
-  
+
+  <header>
+    <img src="./images/logo.png" alt="Elevate Your Recipe logo" id="logo">
+  </header>
+  <section>
+    <span>Elevation</span>
+    <input type="range" id="elevation" name="Elevation" min="0" max="15000" step="500" value="0">
+    <span id="rangeValue">0</span>
+    <button id="find-recipe">Adjust your recipe!</button>
+  </section>
+  <main>
+    <section id="recipeTitle">
+      <h1>Recipe Name</h1>
+    </section>
+    <section id="recipe">Recipe</section>
+    <section id="bakersPercent ">Bakers Percentages</section>
+    <section id="instructions">
+      <h2>Instructions</h2>
+    </section>
+  </main>
+
+  <footer>
+    <section id="donate"></section>
+    <section id="contact"></section>
+  </footer>
 
   <script src="popup.js"></script>
 </body>
+
 </html>
