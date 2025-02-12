@@ -1,20 +1,21 @@
 {
   "manifest_version": 3,
   "name": "Recipe Elevation Delta",
-  "version": "0.8",
-  "permissions": ["activeTab", "scripting"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "images/icon-16x16.png",
-      "48": "images/icon-48x48.png",
-      "128": "images/icon-128x128.png"
-    }
+  "version": "0.9",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "content_scripts": [
-    {
-      "matches": ["https://*/*", "http://*/*"],
-      "js": ["script.js"]
-    }
-  ]
+  "icons": {
+    "16": "images/icon-16x16.png",
+    "48": "images/icon-48x48.png",
+    "128": "images/icon-128x128.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
 }

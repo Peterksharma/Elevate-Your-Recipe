@@ -1,78 +1,151 @@
-
-function findRecipeList() {
-  const container = document.querySelectorall('body, ol, li, ul');
-  // console.log(container)
-  const recipeLists = []; // make an empty array to hold the recipe lists
-
-  if (container) {
-    const lists = container.querySelectorAll('ul, ol');
-  
-    lists.forEach(list => {
-      //selecting to lists to search through
-      var ingredientsList = list.querySelectorAll('li');
-      //loop to search the lists looking for criteria and sees if the list contains the proper information or not
-      for (var ingredient of ingredientsList) {
-        var ingredientText = ingredient.textContent.trim();
-        console.log("am i working?")
-        //Looks through lists to find these search credientials. First part searches looking for the whole number or fraction followed by any of the key terms.
-        //  "/d+" looks for a digit, "/s+ searches if there is a space" 
-        // looks for units
-        var searchCredentials = /(\d+\s*(?:\d+\/\d+)?)\s* (cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|tbsp|)/g; // "/g is global scale"
-        var match = searchCredentials.exec(ingredientText);
-        
-        if (match) {
-          const quantity = match[1]; // The quantity of the ingredient
-          const unit = match[2]; // The unit of measurement of the ingredient
-          console.log(`Quantity: ${quantity}, Unit: ${unit}`);
-        }
-      }
-      
-      recipeLists.push(list); // push the list onto the array of recipe lists
-    });
-    
-    return recipeLists; // return the array of recipe lists
-  } else {
-    return null; // return null if the container is not found
-  }
-}
-
-
-// Listen for the message from the popup
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  // console.log(request.action);
-  if (request.action === 'findRecipe') {
-    var recipeListItems = findRecipeList();
-    console.log('5', recipeListItems);
-    
-    if (recipeListItems) {
-      recipeListItems.forEach(function(listItem) {
-        console.log(listItem.textContent);
-        // localStorage.setItem('Recipe list', JSON.stringify(listItem.textContent));
-        console.log('6');
-      });
-    } else {
-      console.log('Recipe list not found.');
-    }
-  }
-});
-
+console.log('Content script loaded');
 
 // Listen for the message from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // console.log(request.saction)
+  console.log('Message received in content script:', request);
   if (request.action === 'findRecipe') {
-    var recipeListItems = findRecipeList();
-    console.log('5', recipeListItems);
+    console.log('Received findRecipe action');
     
+    const recipeData = {
+      title: null,
+      ingredients: [],
+      instructions: [],
+      parsedIngredients: {
+        flour: [],
+        leavener: [],
+        liquid: [],
+        sugar: []
+      }
+    };
 
-    if (recipeListItems) {
-      recipeListItems.forEach((listItem) => {
-        console.log(listItem.textContent);
-        // localStorage.setItem('Recipe list', JSON.stringify(listItem.textContent));
-        console.log('6');
-      });
-    } else {
-      console.log('Recipe list not found.');
+    // Find and highlight title
+    const recipeTitle = document.querySelector('h1');
+    console.log('Found recipe title:', recipeTitle);
+    if (recipeTitle) {
+      recipeTitle.style.color = 'orange';
+      recipeData.title = recipeTitle.textContent.trim();
     }
+    
+    // Find and highlight ingredients
+    const ingredientSelectors = RECIPE_PATTERNS.recipeSelectors.ingredients.join(', ');
+    console.log('Looking for ingredients with selectors:', ingredientSelectors);
+    const ingredientElements = document.querySelectorAll(ingredientSelectors);
+    console.log('Found ingredients:', ingredientElements.length);
+
+    // Process ingredients, removing duplicates and cleaning up the text
+    const processedIngredients = new Set();
+    const allIngredients = [];
+    const processedParsedIngredients = new Set(); // Add this for parsed ingredients deduplication
+
+    // First, collect all individual ingredients
+    ingredientElements.forEach(element => {
+      element.style.color = 'red';
+      const text = element.textContent.trim();
+      
+      // Split the text by the bullet point character and process each ingredient
+      const ingredients = text.split('▢').filter(i => i.trim());
+      ingredients.forEach(ingredient => {
+        const cleanIngredient = ingredient.trim()
+          .replace(/\s+/g, ' ') // normalize whitespace
+          .replace(/^ingredients\s*:?\s*/i, '') // remove "ingredients" header
+          .replace(/^\d+x\s*/, '') // remove "1x2x3x" type text
+          .replace(/dough\s+shaping/i, ''); // remove "Dough shaping" text
+        
+        if (cleanIngredient && !cleanIngredient.toLowerCase().includes('ingredients')) {
+          allIngredients.push(cleanIngredient);
+        }
+      });
+    });
+
+    // Then deduplicate and process them
+    allIngredients.forEach(ingredient => {
+      // Create a normalized version for deduplication
+      const normalizedIngredient = ingredient.toLowerCase().replace(/\s+/g, ' ').trim();
+      
+      if (!processedIngredients.has(normalizedIngredient)) {
+        processedIngredients.add(normalizedIngredient);
+        recipeData.ingredients.push(ingredient);
+
+        // Create a normalized version for measurement comparison
+        const normalizedForMeasurement = ingredient.toLowerCase()
+          .replace(/\s*\([^)]*\)/g, '') // remove parenthetical notes
+          .replace(/\s*note\s*\d+/gi, '') // remove "Note X" references
+          .replace(/dough\s+shaping/i, '') // remove "Dough shaping" text
+          .trim();
+
+        // Check for measurements first
+        const hasMeasurement = RECIPE_PATTERNS.measurements.test(normalizedForMeasurement);
+        RECIPE_PATTERNS.measurements.lastIndex = 0; // Reset the regex index
+
+        // Categorize the ingredient if it has measurements
+        if (hasMeasurement) {
+          if (RECIPE_PATTERNS.ingredients.flour.test(normalizedForMeasurement)) {
+            if (!processedParsedIngredients.has(normalizedForMeasurement)) {
+              processedParsedIngredients.add(normalizedForMeasurement);
+              recipeData.parsedIngredients.flour.push(ingredient);
+            }
+          }
+          if (RECIPE_PATTERNS.ingredients.leavener.test(normalizedForMeasurement)) {
+            if (!processedParsedIngredients.has(normalizedForMeasurement)) {
+              processedParsedIngredients.add(normalizedForMeasurement);
+              recipeData.parsedIngredients.leavener.push(ingredient);
+            }
+          }
+          if (RECIPE_PATTERNS.ingredients.liquid.test(normalizedForMeasurement)) {
+            if (!processedParsedIngredients.has(normalizedForMeasurement)) {
+              processedParsedIngredients.add(normalizedForMeasurement);
+              recipeData.parsedIngredients.liquid.push(ingredient);
+            }
+          }
+          if (RECIPE_PATTERNS.ingredients.sugar.test(normalizedForMeasurement)) {
+            if (!processedParsedIngredients.has(normalizedForMeasurement)) {
+              processedParsedIngredients.add(normalizedForMeasurement);
+              recipeData.parsedIngredients.sugar.push(ingredient);
+            }
+          }
+        }
+      }
+    });
+
+    // Find and highlight instructions
+    const instructionSelectors = RECIPE_PATTERNS.recipeSelectors.instructions.join(', ');
+    const instructionElements = document.querySelectorAll(instructionSelectors);
+    
+    // Process instructions, removing duplicates and cleaning up the text
+    const processedInstructions = new Set();
+    instructionElements.forEach(element => {
+      element.style.color = 'green';
+      
+      // Get all instruction list items
+      const instructionItems = element.querySelectorAll('li');
+      if (instructionItems.length > 0) {
+        instructionItems.forEach(item => {
+          // Get the text content of the instruction
+          const instructionText = item.textContent.trim();
+          if (instructionText && !instructionText.toLowerCase().includes('instructions')) {
+            // Store both the HTML and text content
+            recipeData.instructions.push({
+              text: instructionText,
+              html: item.innerHTML
+            });
+          }
+        });
+      } else {
+        // Fallback for non-list instructions
+        const text = element.textContent.trim();
+        if (text && !processedInstructions.has(text) && !text.toLowerCase().includes('instructions')) {
+          processedInstructions.add(text);
+          recipeData.instructions.push({
+            text: text,
+            html: element.innerHTML
+          });
+        }
+      }
+    });
+
+    console.log('Processed recipe data:', recipeData);
+    // Send the recipe data back to the popup
+    sendResponse({ recipe: recipeData });
+    return true; // Required for async response
   }
 });

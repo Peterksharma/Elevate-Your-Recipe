@@ -1,177 +1,294 @@
-var slider = document.getElementById("elevation");
-var output = document.getElementById("rangeValue");
+console.log('Popup script starting...');
 
-//Display Slider Value
-output.innerHTML = slider.value;
-slider.oninput = function() {
-  output.innerHTML = this.value;
-}
+// RecipeAdjuster is now available globally
+let recipeUI = null;
 
-document.getElementById('find-recipe').addEventListener('click', () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    const activeTab = tabs[0];
-    chrome.tabs.sendMessage(activeTab.id, { action: 'findRecipe' });
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: activeTab.id },
-        function: extractRecipe,
-      },
-      () => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
+function initializeUI() {
+  console.log('Initializing UI...');
+  try {
+    class RecipeUI {
+      constructor() {
+        console.log('RecipeUI constructor called');
+        this.slider = document.getElementById("elevation");
+        this.output = document.getElementById("rangeValue");
+        this.findRecipeButton = document.getElementById('find-recipe');
+        
+        if (!this.slider || !this.output || !this.findRecipeButton) {
+          throw new Error('Required elements not found');
+        }
+        
+        console.log('Find Recipe button found:', this.findRecipeButton);
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        console.log('Setting up event listeners');
+        try {
+          // Display Slider Value
+          this.output.innerHTML = this.slider.value;
+          this.slider.oninput = () => {
+            this.output.innerHTML = this.slider.value;
+          };
+
+          this.findRecipeButton.addEventListener('click', async () => {
+            console.log('Button clicked!');
+            try {
+              const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+              console.log('Found active tab:', tabs[0]);
+              const activeTab = tabs[0];
+
+              // First inject the content scripts
+              console.log('Injecting content scripts...');
+              await chrome.scripting.executeScript({
+                target: { tabId: activeTab.id },
+                files: ['searchCriteria.js']
+              });
+              
+              await chrome.scripting.executeScript({
+                target: { tabId: activeTab.id },
+                files: ['script.js']
+              });
+              
+              console.log('Content scripts injected, sending message');
+              chrome.tabs.sendMessage(activeTab.id, { action: 'findRecipe' }, (response) => {
+                console.log('Got response from content script:', response);
+                if (chrome.runtime.lastError) {
+                  console.error('Runtime error:', chrome.runtime.lastError);
+                  return;
+                }
+                
+                if (response && response.recipe) {
+                  console.log('Recipe found:', response.recipe);
+                  this.displayRecipe(response.recipe);
+                } else {
+                  console.log('No recipe found');
+                }
+              });
+            } catch (error) {
+              console.error('Error in click handler:', error);
+            }
+          });
+        } catch (error) {
+          console.error('Error in setupEventListeners:', error);
         }
       }
-    );
-  });
-});
 
-function extractRecipe() {
-  const recipeTitle = document.querySelector('h1');
-  if (recipeTitle) {
-    recipeTitle.style.color = 'orange';
-    console.log('Recipe Title:', recipeTitle.textContent.trim());
-  } else {
-    console.error('Recipe title not found.');
-  }
-  
-  const ingredientAmounts = document.querySelectorAll('ul li');
-  ingredientAmounts.forEach(ingredient => {
-    ingredient.style.color = 'red';
-  });
+      displayRecipe(recipeData) {
+        console.log('Displaying recipe:', recipeData);
+        if (!recipeData) return;
 
-  const instructionsList = document.querySelectorAll('ol li');
-  instructionsList.forEach(instruction => {
-    instruction.style.color = 'green';
-  });
-
-  //Bread?
-  //This is the filter for finding things.
-  const searchFlour = /(AP|All(-|\s*)Purpose|Bread|Cake|Pastry|Whole(-|\s*)Wheat|Self(-|\s*)Rising)?\s*Flour|Flour/gi;
-  const measurementRegex = /(\d+(?:\.\d+)?(?:\s\d+\/\d+)?|\d+\/\d+)\s*(cup|cups|oz|ounce|gram|grams|g|teaspoon|tsp|tablespoon|Tablespoon|tbsp)/gi;
-  const searchRiser = /baking\s*(powder|soda)|yeast/i;
-  const searchLiquid = /(?:warm|cold\s+)?(water|milk|scalded\s+milk)/i;
-  const searchSugar = /(?:Granulated|White|Brown|Light\s*Brown|Dark\s*Brown|Powdered|Confectioners'|Cane|Raw|Turbinado|Demerara|Muscovado|Superfine|Coconut|Palm|Date|Maple|Baker)?\s*Sugar|Sugar/gi;
-
-  function searchIngredients(searchTerm, ingredientType) {
-    if (ingredientAmounts.length > 0) {
-      console.log(`${ingredientType} Amounts:`);
-      ingredientAmounts.forEach((ingredient, index) => {
-        const ingredientText = ingredient.textContent.trim();
-        searchTerm.lastIndex = 0; 
-        measurementRegex.lastIndex = 0;
-  
-        if (searchTerm.test(ingredientText) && measurementRegex.test(ingredientText) && ingredientText.length < 150 && !ingredientText.match(/says:/)) {
-          console.log(`${index + 1}. ${ingredientText}`);
+        // Helper function to parse fractions and mixed numbers
+        function parseAmount(amount) {
+          // Remove any spaces
+          amount = amount.replace(/\s+/g, '');
+          
+          // Check if it's a mixed number (e.g., "1 1/2")
+          const mixedMatch = amount.match(/^(\d+)\s*(\d+\/\d+)$/);
+          if (mixedMatch) {
+            const whole = parseInt(mixedMatch[1]);
+            const [num, denom] = mixedMatch[2].split('/').map(Number);
+            return whole + (num / denom);
+          }
+          
+          // Check if it's a simple fraction (e.g., "1/2")
+          const fractionMatch = amount.match(/^(\d+)\/(\d+)$/);
+          if (fractionMatch) {
+            const [_, num, denom] = fractionMatch;
+            return Number(num) / Number(denom);
+          }
+          
+          // Otherwise, just return the number
+          return Number(amount);
         }
-      });
-    } else {
-      console.error('Ingredients not found.');
-    }
-  }
-  
-  
 
-  searchIngredients(searchFlour, 'Flour');
-  searchIngredients(searchRiser, 'Leavener');
-  searchIngredients(searchLiquid, 'Liquid');
-  searchIngredients(searchSugar, 'Sugar');
+        try {
+          // Display recipe title
+          const titleElement = document.querySelector('#recipe-title h1');
+          if (titleElement) {
+            titleElement.textContent = recipeData.title || 'Recipe';
+          }
 
+          // Display original ingredients
+          const originalIngredientsContainer = document.getElementById('original-ingredients');
+          if (originalIngredientsContainer) {
+            originalIngredientsContainer.innerHTML = '';
+            if (recipeData.ingredients && recipeData.ingredients.length > 0) {
+              recipeData.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.textContent = ingredient;
+                originalIngredientsContainer.appendChild(li);
+              });
+            }
+          }
 
-  //WORKING ON GETTING THE INSTRUCTIONS
-  function findInstructionsHeader(ingredientsHeader) {
-  let currentElement = ingredientsHeader.nextElementSibling;
-  while (currentElement) {
-    if (currentElement.tagName.toLowerCase() === ingredientsHeader.tagName.toLowerCase() &&
-        currentElement.textContent.toLowerCase().includes('instruction')) {
-      return currentElement;
-    }
-    currentElement = currentElement.nextElementSibling;
-  }
-  return null;
-}
+          // Display parsed ingredients
+          const adjustedContainer = document.getElementById('adjusted-ingredients');
+          if (adjustedContainer) {
+            adjustedContainer.innerHTML = '';
+            if (recipeData.parsedIngredients) {
+              // Use a Set to track displayed ingredients
+              const displayedIngredients = new Set();
+              
+              // Get the current elevation value
+              const elevation = this.slider.value;
+              const adjuster = new RecipeAdjuster(parseInt(elevation));
+              
+              Object.entries(recipeData.parsedIngredients).forEach(([type, ingredients]) => {
+                ingredients.forEach(ingredient => {
+                  // Create normalized version for deduplication
+                  const normalizedIngredient = ingredient.toLowerCase().replace(/\s+/g, ' ').trim();
+                  
+                  if (!displayedIngredients.has(normalizedIngredient)) {
+                    displayedIngredients.add(normalizedIngredient);
+                    
+                    // Parse the ingredient measurements
+                    const volumeMatch = ingredient.match(/(\d+(?:\s*\d*\/\d+)?)\s*(cups?|tbsp|tsp|tablespoons?|teaspoons?)/i);
+                    const weightMatch = ingredient.match(/\((\d+)\s*(g|grams?)\)/i);
+                    
+                    if (volumeMatch || weightMatch) {
+                      // Create the ingredient section
+                      const section = document.createElement('div');
+                      section.className = 'adjusted-ingredient';
+                      
+                      // Add the ingredient type header
+                      const header = document.createElement('h4');
+                      header.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ':';
+                      section.appendChild(header);
+                      
+                      // Add volume adjustment if available
+                      if (volumeMatch) {
+                        const [, amount, unit] = volumeMatch;
+                        const numericAmount = parseAmount(amount);
+                        let adjustedAmount;
+                        
+                        // Convert to standard units before adjustment
+                        let standardAmount;
+                        switch(unit.toLowerCase()) {
+                          case 'cup':
+                          case 'cups':
+                            standardAmount = numericAmount;
+                            break;
+                          case 'tbsp':
+                          case 'tablespoon':
+                          case 'tablespoons':
+                            standardAmount = numericAmount;
+                            break;
+                          case 'tsp':
+                          case 'teaspoon':
+                          case 'teaspoons':
+                            standardAmount = numericAmount;
+                            break;
+                          default:
+                            standardAmount = numericAmount;
+                        }
+                        
+                        switch(type) {
+                          case 'flour':
+                            adjustedAmount = adjuster.adjustFlour(standardAmount);
+                            break;
+                          case 'liquid':
+                            adjustedAmount = adjuster.adjustLiquid(standardAmount);
+                            break;
+                          case 'sugar':
+                            adjustedAmount = adjuster.adjustSugar(standardAmount);
+                            break;
+                          case 'leavener':
+                            adjustedAmount = adjuster.adjustLeavening(standardAmount);
+                            break;
+                        }
+                        
+                        const volumeDiv = document.createElement('div');
+                        volumeDiv.textContent = `Volume: ${amount} ${unit} => ${adjustedAmount.toFixed(2)} ${unit}`;
+                        section.appendChild(volumeDiv);
+                      }
+                      
+                      // Add weight adjustment if available
+                      if (weightMatch) {
+                        const [, amount, unit] = weightMatch;
+                        const numericAmount = parseInt(amount);
+                        let adjustedAmount;
+                        
+                        switch(type) {
+                          case 'flour':
+                            adjustedAmount = adjuster.adjustFlour(numericAmount);
+                            break;
+                          case 'liquid':
+                            adjustedAmount = adjuster.adjustLiquid(numericAmount);
+                            break;
+                          case 'sugar':
+                            adjustedAmount = adjuster.adjustSugar(numericAmount);
+                            break;
+                          case 'leavener':
+                            adjustedAmount = adjuster.adjustLeavening(numericAmount);
+                            break;
+                        }
+                        
+                        const weightDiv = document.createElement('div');
+                        weightDiv.textContent = `Weight: ${amount}${unit} => ${Math.round(adjustedAmount)}${unit}`;
+                        section.appendChild(weightDiv);
+                      }
+                      
+                      adjustedContainer.appendChild(section);
+                    }
+                  }
+                });
+              });
+            }
+          }
 
-// function extractInstructions() {
-//   // Try to find the instructions container by class name first
-//   const instructionsContainer = document.querySelector('.tasty-recipes-instructions');
-//   let instructionsList = null;
-
-//   if (instructionsContainer) {
-//     instructionsList = instructionsContainer.querySelector('ol, ul');
-//   } else {
-//     // Fallback to the original method
-//     const headers = document.querySelectorAll('h1, h2, h3, h4');
-//     let instructionsHeader = null;
-
-//     headers.forEach(header => {
-//       if (header.textContent.trim().toLowerCase() === 'instructions') {
-//         instructionsHeader = header;
-//       }
-//     });
-
-//     if (instructionsHeader) {
-//       let currentElement = instructionsHeader.nextElementSibling;
-//       while (currentElement) {
-//         if (currentElement.tagName.toLowerCase() === 'ol' || currentElement.tagName.toLowerCase() === 'ul') {
-//           instructionsList = currentElement;
-//           break;
-//         }
-//         currentElement = currentElement.nextElementSibling;
-//       }
-//     }
-//   }
-
-//   if (instructionsList) {
-//     const instructionSteps = instructionsList.querySelectorAll('li');
-//     console.log('Instructions:');
-
-//     instructionSteps.forEach((step, index) => {
-//       const stepText = step.textContent.trim().replace(/\s+/g, ' ');
-//       console.log(`${index + 1}. ${stepText}`);
-//     });
-//   } else {
-//     console.error('Instructions list not found.');
-//   }
-// }
-
-// extractInstructions();
-
-function extractInstructions() {
-  const possibleHeaders = document.querySelectorAll('h1, h2, h3, h4, h5, h6, div');
-  let instructionsList = null;
-
-  possibleHeaders.forEach(header => {
-    const headerText = header.textContent.trim().toLowerCase();
-    console.log('Checking header:', headerText); // Diagnostic log
-
-    if (headerText.includes('instruction') || headerText.includes('step')) {
-      let currentElement = header;
-      let depth = 0;
-      const maxDepth = 10; // Increased max depth
-
-      while (depth < maxDepth && currentElement) {
-        if (currentElement.tagName.toLowerCase() === 'ol' || currentElement.tagName.toLowerCase() === 'ul') {
-          instructionsList = currentElement;
-          break;
+          // Display instructions
+          const instructionsContainer = document.getElementById('recipe-instructions');
+          if (instructionsContainer) {
+            instructionsContainer.innerHTML = '';
+            instructionsContainer.style.textAlign = 'left';
+            if (recipeData.instructions && recipeData.instructions.length > 0) {
+              recipeData.instructions.forEach((instruction, index) => {
+                const li = document.createElement('li');
+                li.style.listStyleType = 'decimal';
+                li.style.textAlign = 'left';
+                
+                // Create a div to hold the instruction text
+                const div = document.createElement('div');
+                div.className = 'instruction-text';
+                div.style.textAlign = 'left';
+                
+                // Use the HTML content if available, otherwise use text
+                if (instruction.html) {
+                  div.innerHTML = instruction.html;
+                } else {
+                  const span = document.createElement('span');
+                  span.style.display = 'block';
+                  span.style.textAlign = 'left';
+                  span.textContent = instruction.text;
+                  div.appendChild(span);
+                }
+                
+                li.appendChild(div);
+                instructionsContainer.appendChild(li);
+              });
+            } else {
+              instructionsContainer.innerHTML = '<p>No instructions found</p>';
+            }
+          }
+        } catch (error) {
+          console.error('Error in displayRecipe:', error);
         }
-        currentElement = currentElement.nextElementSibling || currentElement.parentElement;
-        depth++;
       }
     }
-  });
 
-  if (instructionsList) {
-    const instructionSteps = instructionsList.querySelectorAll('li');
-    console.log('Instructions:');
-
-    instructionSteps.forEach((step, index) => {
-      const stepText = step.textContent.trim().replace(/\s+/g, ' ');
-      console.log(`${index + 1}. ${stepText}`);
-    });
-  } else {
-    console.error('Instructions list not found.');
+    recipeUI = new RecipeUI();
+  } catch (error) {
+    console.error('Error initializing UI:', error);
+    const main = document.querySelector('main');
+    if (main) {
+      main.innerHTML = '<div class="error">Error loading extension. Please try reloading.</div>';
+    }
   }
 }
 
-extractInstructions();
-
+// Initialize the UI when the document is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeUI);
+} else {
+  initializeUI();
 }

@@ -6,36 +6,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./style.css">
   <title>Elevate Your Recipe</title>
+  <script src="searchCriteria.js"></script>
+  <script src="convert.js"></script>
+  <script src="popup.js"></script>
 </head>
 
 <body>
-
   <header>
     <img src="./images/logo.png" alt="Elevate Your Recipe logo" id="logo">
   </header>
-  <section>
-    <span>Elevation</span>
-    <input type="range" id="elevation" name="Elevation" min="0" max="15000" step="500" value="0">
-    <span id="rangeValue">0</span>
+
+  <section class="controls">
+    <div class="elevation-control">
+      <span>Elevation</span>
+      <input type="range" id="elevation" name="Elevation" min="0" max="15000" step="500" value="0">
+      <span id="rangeValue">0</span>
+    </div>
     <button id="find-recipe">Adjust your recipe!</button>
   </section>
-  <main>
-    <section id="recipeTitle">
+
+  <main id="recipe-content">
+    <section id="recipe-title" class="recipe-section">
       <h1>Recipe Name</h1>
     </section>
-    <section id="recipe">Recipe</section>
-    <section id="bakersPercent ">Bakers Percentages</section>
-    <section id="instructions">
+
+    <section id="recipe-ingredients" class="recipe-section">
+      <h2>Ingredients</h2>
+      <ul id="original-ingredients" class="ingredients-list">
+        <!-- Original ingredients will be populated here -->
+      </ul>
+      <h3>Adjusted for Elevation</h3>
+      <ul id="adjusted-ingredients" class="ingredients-list">
+        <!-- Adjusted ingredients will be populated here -->
+      </ul>
+    </section>
+
+    <section id="instructions" class="recipe-section">
       <h2>Instructions</h2>
+      <ol id="recipe-instructions">
+        <!-- Instructions will be populated here -->
+      </ol>
     </section>
   </main>
-
-  <footer>
-    <section id="donate"></section>
-    <section id="contact"></section>
-  </footer>
-
-  <script src="popup.js"></script>
 </body>
 
 </html>

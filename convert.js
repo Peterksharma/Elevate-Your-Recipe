@@ -1,75 +1,179 @@
-//Function that holds an array of arrays with the details of how to convert that ingredient.
+// Remove the import since ALTITUDE_RANGES is now global
+
+/**
+ * Adjusts recipe ingredients for high altitude baking
+ * @param {Object} recipe - Object containing ingredient amounts in grams/ml
+ * @param {number} altitude - Altitude in feet
+ * @returns {Object} Adjusted recipe measurements
+ */
 function adjustRecipeAmounts(recipe, altitude) {
-    
-    //For this conversion, it really should work by adding ~1%-2% of the flour weight back into it, to adjust for the water
-    //The recipe should add a min of ~1 tablespoon of flour
-    // One tablespoon of flour is roughly 9g of the flour
-    const flourAltitudeRanges = [
-        { altitudeRange: [3500, 6500], increaseAmount: 2 },
-        { altitudeRange: [6500, 8500], increaseAmount: 2.25 },
-        { altitudeRange: [8500, 10000], increaseAmount: 2.5 }
-    ];
+    // Return original recipe if below 3000ft
+    if (altitude < 3000) {
+        return recipe;
+    }
 
-    //this is a lot more complicated for the calculations....
-    const leaveningAgentsAltitudeRanges = [
-        { altitudeRange: [3500, 5000], decreaseAmount: 0.125}, // for 1 tsp: 87.5%, 2tsp: 75%, 4tsp: 62.5% 
-        { altitudeRange: [5000, 6500], decreaseAmount: [0.125, 0.25] }, // for 1 tsp: 50%, 2tsp: 50%, 4tsp: 37.5%%
-        { altitudeRange: [6500, 8000], decreaseAmount: 0.25 } //for 1 tsp: 25%, 2tsp: 37.5%, 4tsp: 25%
-    ];
+    const adjustedRecipe = { ...recipe };
 
-    const sugarAltitudeRanges = [
-        { altitudeRange: [3500, 6500], decreaseAmount: 1 },
-        { altitudeRange: [6500, 8500], decreaseAmount: 2 },
-        { altitudeRange: [8500, 10000], decreaseAmount: [1, 3] }
-    ];
+    // Flour adjustments (increase to strengthen structure)
+    // Add 1 tbsp (15g) per cup (120g) of flour above 3000ft
+    // Additional tbsp per cup for each 1500ft above 5000ft
+    if (adjustedRecipe.flour) {
+        const cupsOfFlour = adjustedRecipe.flour / 120;
+        let flourIncrease = 15 * cupsOfFlour; // Base increase (1 tbsp/cup)
+        
+        if (altitude > 5000) {
+            const additionalTbsp = Math.floor((altitude - 5000) / 1500);
+            flourIncrease += (15 * cupsOfFlour * additionalTbsp);
+        }
+        
+        adjustedRecipe.flour += flourIncrease;
+    }
 
-    const liquidAltitudeRanges = [
-        { altitudeRange: [3500, 6500], increaseAmount: [1, 2] },
-        { altitudeRange: [6500, 8500], increaseAmount: [2, 4] },
-        { altitudeRange: [8500, 10000], increaseAmount: [3, 4] }
-    ];
+    // Leavening agents (decrease to prevent overexpansion)
+    // Baking powder/soda reduction increases with altitude
+    const leaveningReductions = {
+        3000: 0.125, // Reduce by 1/8 at 3000ft
+        5000: 0.25,  // Reduce by 1/4 at 5000ft
+        7000: 0.33   // Reduce by 1/3 at 7000ft+
+    };
 
-    // Adjust Flour
-    recipe.flour += calculateAdjustment(flourAltitudeRanges, altitude);
-
-    // Adjust Leavening Agents
-    recipe.leaveningAgents -= calculateAdjustment(leaveningAgentsAltitudeRanges, altitude);
-
-    // Adjust Sugar
-    recipe.sugar -= calculateAdjustment(sugarAltitudeRanges, altitude);
-
-    // Adjust Liquid
-    recipe.liquid += calculateAdjustment(liquidAltitudeRanges, altitude);
-
-    return recipe;
-}
-
-function calculateAdjustment(altitudeRanges, altitude) {
-    for (const range of altitudeRanges) {
-        const [minAltitude, maxAltitude] = range.altitudeRange;
-        if (altitude >= minAltitude && altitude <= maxAltitude) {
-            const adjustment = range.decreaseAmount || range.increaseAmount;
-            return Array.isArray(adjustment) ? getRandomNumberBetween(adjustment[0], adjustment[1]) : adjustment;
+    for (const agent of ['bakingPowder', 'bakingSoda']) {
+        if (adjustedRecipe[agent]) {
+            let reduction = 0.125; // Default reduction
+            
+            for (const [height, red] of Object.entries(leaveningReductions)) {
+                if (altitude >= parseInt(height)) {
+                    reduction = red;
+                }
+            }
+            
+            adjustedRecipe[agent] *= (1 - reduction);
         }
     }
-    return 0;
+
+    // Sugar reduction (decreases with altitude to maintain structure)
+    // Reduce by 1-2 tbsp per cup above 3000ft
+    if (adjustedRecipe.sugar) {
+        const cupsOfSugar = adjustedRecipe.sugar / 200; // 200g sugar = 1 cup
+        let reduction = 15 * cupsOfSugar; // 1 tbsp (15g) per cup base reduction
+        
+        if (altitude > 5000) {
+            reduction *= 2; // 2 tbsp per cup above 5000ft
+        }
+        
+        adjustedRecipe.sugar = Math.max(0, adjustedRecipe.sugar - reduction);
+    }
+
+    // Liquid adjustments (increase to counter faster evaporation)
+    // Add 1-2 tbsp per cup of liquid above 3000ft
+    // Additional 1-2 tbsp per 1500ft above 5000ft
+    for (const liquid of ['water', 'milk', 'buttermilk']) {
+        if (adjustedRecipe[liquid]) {
+            const cupsOfLiquid = adjustedRecipe[liquid] / 240; // 240ml = 1 cup
+            let increase = 15 * cupsOfLiquid; // 1 tbsp (15ml) per cup base increase
+            
+            if (altitude > 5000) {
+                const additionalTbsp = Math.floor((altitude - 5000) / 1500);
+                increase += (15 * cupsOfLiquid * additionalTbsp);
+            }
+            
+            adjustedRecipe[liquid] += increase;
+        }
+    }
+
+    // Temperature adjustment (increase by 25°F/15°C at 3000ft+)
+    if (adjustedRecipe.temperature) {
+        if (adjustedRecipe.temperatureUnit === 'F') {
+            adjustedRecipe.temperature += 25;
+        } else if (adjustedRecipe.temperatureUnit === 'C') {
+            adjustedRecipe.temperature += 15;
+        }
+    }
+
+    return adjustedRecipe;
 }
 
-function getRandomNumberBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+class RecipeAdjuster {
+  constructor(altitude) {
+    this.validateAltitude(altitude);
+    this.altitude = altitude;
+  }
+
+  validateAltitude(altitude) {
+    if (altitude < 0 || altitude > 15000) {
+      throw new Error('Altitude must be between 0 and 15000 feet');
+    }
+  }
+
+  adjustRecipe(recipe) {
+    return adjustRecipeAmounts(recipe, this.altitude);
+  }
+
+  adjustFlour(amount) {
+    if (this.altitude < 3000) return amount;
+    
+    // Base increase is 1 tbsp (1/16 cup) per cup of flour
+    const baseIncrease = 1/16;
+    
+    // Additional increase for every 1500ft above 5000ft
+    const additionalIncrease = this.altitude > 5000 
+      ? Math.floor((this.altitude - 5000) / 1500) * (1/16)
+      : 0;
+    
+    const totalIncrease = baseIncrease + additionalIncrease;
+    return amount * (1 + totalIncrease);
+  }
+
+  adjustLeavening(amount) {
+    if (this.altitude < 3000) return amount;
+    
+    // Progressive reduction based on altitude
+    let reduction;
+    if (this.altitude >= 7000) {
+      reduction = 0.33; // Reduce by 1/3
+    } else if (this.altitude >= 5000) {
+      reduction = 0.25; // Reduce by 1/4
+    } else {
+      reduction = 0.125; // Reduce by 1/8
+    }
+    
+    return amount * (1 - reduction);
+  }
+
+  adjustSugar(amount) {
+    if (this.altitude < 3000) return amount;
+    
+    // Base reduction is 1 tbsp per cup (1/16 reduction)
+    let reduction = 1/16;
+    
+    // Double the reduction above 5000ft
+    if (this.altitude > 5000) {
+      reduction *= 2;
+    }
+    
+    return amount * (1 - reduction);
+  }
+
+  adjustLiquid(amount) {
+    if (this.altitude < 3000) return amount;
+    
+    // Base increase is 2 tbsp per cup (2/16 = 1/8 cup increase)
+    let increase = 1/8;
+    
+    // Additional increase for every 1500ft above 5000ft
+    if (this.altitude > 5000) {
+      const additionalTbsp = Math.floor((this.altitude - 5000) / 1500);
+      increase += (additionalTbsp * 1/8);
+    }
+    
+    return amount * (1 + increase);
+  }
+
+  static formatMeasurement(value, unit) {
+    const roundedValue = Math.round(value * 100) / 100;
+    return `${roundedValue} ${unit}`;
+  }
 }
 
-// Example usage:
-const originalRecipe = {
-    flour: 2,
-    leaveningAgents: 1,
-    sugar: 3,
-    liquid: 4
-};
-
-const altitude = 5000; // Example altitude
-
-const adjustedRecipe = adjustRecipeAmounts(originalRecipe, altitude);
-
-console.log('Original Recipe:', originalRecipe);
-console.log('Adjusted Recipe:', adjustedRecipe);
+// Make RecipeAdjuster globally available
+window.RecipeAdjuster = RecipeAdjuster;
