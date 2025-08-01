@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevate Your Recipe - High Altitude Baking Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="images/icon-48x48.png">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <img src="images/logo.png" alt="Elevate Your Recipe logo" class="logo">
+            <h1>Elevate Your Recipe</h1>
+            <p class="subtitle">High Altitude Baking Calculator</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Recipe Input Section -->
+            <section class="recipe-input-section">
+                <h2>Enter Your Recipe</h2>
+                <div class="input-group">
+                    <label for="recipe-title">Recipe Title:</label>
+                    <input type="text" id="recipe-title" placeholder="e.g., Classic Chocolate Chip Cookies">
+                </div>
+
+                <div class="input-group">
+                    <label for="recipe-url">Recipe URL:</label>
+                    <input type="url" id="recipe-url" placeholder="https://example.com/recipe">
+                    <small>Paste a recipe URL and we'll automatically extract the recipe for you</small>
+                    <button id="extract-recipe" class="btn-secondary" style="margin-top: 10px;">Extract Recipe from URL</button>
+                </div>
+
+                <!-- Extracted Recipe Display -->
+                <div id="extracted-recipe-display" class="extracted-recipe-section" style="display: none;">
+                    <h3>Extracted Recipe</h3>
+                    <div class="extracted-content">
+                        <div class="extracted-ingredients">
+                            <h4>Ingredients</h4>
+                            <div id="extracted-ingredients-list" class="ingredients-preview"></div>
+                        </div>
+                        <div class="extracted-instructions">
+                            <h4>Instructions</h4>
+                            <div id="extracted-instructions-list" class="instructions-preview"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="instructions">Instructions:</label>
+                    <textarea id="instructions" rows="6" placeholder="Enter cooking instructions:
+1. Preheat oven to 350°F
+2. Mix dry ingredients
+3. Cream butter and sugar
+4. Add eggs and mix well
+5. Combine wet and dry ingredients
+6. Bake for 10-12 minutes"></textarea>
+                </div>
+            </section>
+
+            <!-- Elevation Control Section -->
+            <section class="elevation-section">
+                <h2>Set Your Elevation</h2>
+                <div class="elevation-control">
+                    <div class="elevation-display">
+                        <span class="elevation-label">Elevation:</span>
+                        <span id="elevation-value">0</span>
+                        <span class="unit">feet</span>
+                    </div>
+                    <input type="range" id="elevation-slider" min="0" max="15000" step="500" value="0">
+                    <div class="elevation-markers">
+                        <span>Sea Level</span>
+                        <span>High Altitude</span>
+                    </div>
+                </div>
+                <button id="adjust-recipe" class="btn-primary">Adjust Recipe for Elevation</button>
+            </section>
+
+            <!-- Recipe Display Section -->
+            <section id="recipe-display" class="recipe-display-section" style="display: none;">
+                <h2 id="display-title">Recipe Name</h2>
+
+                <div class="recipe-comparison">
+                    <div class="recipe-column">
+                        <h3>Original Recipe</h3>
+                        <div class="ingredients-section">
+                            <h4>Ingredients</h4>
+                            <div id="original-ingredients" class="ingredients-list"></div>
+                        </div>
+                        <div class="instructions-section">
+                            <h4>Instructions</h4>
+                            <div id="original-instructions" class="instructions-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="recipe-column">
+                        <h3>Adjusted for <span id="adjusted-elevation">0</span> ft</h3>
+                        <div class="ingredients-section">
+                            <h4>Ingredients</h4>
+                            <div id="adjusted-ingredients" class="ingredients-list"></div>
+                        </div>
+                        <div class="instructions-section">
+                            <h4>Instructions</h4>
+                            <div id="adjusted-instructions" class="instructions-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="print-recipe" class="btn-secondary">Print Recipe</button>
+                    <button id="save-recipe" class="btn-secondary">Save Recipe</button>
+                    <button id="new-recipe" class="btn-secondary">New Recipe</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Elevate Your Recipe. Created by Peter Sharma</p>
+            <p>Perfect for high altitude baking and cooking adjustments</p>
+        </div>
+    </footer>
+
+    <script src="recipeAdjuster.js"></script>
+    <script src="recipeExtractor.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
