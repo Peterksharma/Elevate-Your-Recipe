@@ -23,33 +23,38 @@
             <!-- Recipe Input Section -->
             <section class="recipe-input-section">
                 <h2>Enter Your Recipe</h2>
+
+                <div class="input-group">
+                    <label for="recipe-url">Recipe URL:</label>
+                    <small>Paste a recipe URL and we'll automatically extract the recipe for you</small>
+                    <input type="url" id="recipe-url" placeholder="https://cooking.nytimes.com/recipes/">
+                    <button id="extract-recipe" class="btn-secondary" style="margin-top: 10px;">Extract Recipe from URL</button>
+                </div>
                 <div class="input-group">
                     <label for="recipe-title">Recipe Title:</label>
                     <input type="text" id="recipe-title" placeholder="e.g., Classic Chocolate Chip Cookies">
                 </div>
+            </section>
 
-                <div class="input-group">
-                    <label for="recipe-url">Recipe URL:</label>
-                    <input type="url" id="recipe-url" placeholder="https://example.com/recipe">
-                    <small>Paste a recipe URL and we'll automatically extract the recipe for you</small>
-                    <button id="extract-recipe" class="btn-secondary" style="margin-top: 10px;">Extract Recipe from URL</button>
-                </div>
-
-                <!-- Extracted Recipe Display -->
-                <div id="extracted-recipe-display" class="extracted-recipe-section" style="display: none;">
-                    <h3>Extracted Recipe</h3>
-                    <div class="extracted-content">
-                        <div class="extracted-ingredients">
-                            <h4>Ingredients</h4>
-                            <div id="extracted-ingredients-list" class="ingredients-preview"></div>
-                        </div>
-                        <div class="extracted-instructions">
-                            <h4>Instructions</h4>
-                            <div id="extracted-instructions-list" class="instructions-preview"></div>
-                        </div>
+            <!-- Extracted Recipe Section -->
+            <section id="extracted-recipe-display" class="extracted-recipe-section" style="display: none;">
+                <h2>Extracted Recipe</h2>
+                <div class="extracted-content">
+                    <div class="extracted-ingredients">
+                        <h4>Ingredients</h4>
+                        <div id="extracted-ingredients-list" class="ingredients-preview"></div>
+                    </div>
+                    <div class="extracted-instructions">
+                        <h4>Instructions</h4>
+                        <div id="extracted-instructions-list" class="instructions-preview"></div>
                     </div>
                 </div>
+            </section>
 
+
+            <!-- Instructions Section -->
+            <section class="instructions-section">
+                <h2>Recipe Instructions</h2>
                 <div class="input-group">
                     <label for="instructions">Instructions:</label>
                     <textarea id="instructions" rows="6" placeholder="Enter cooking instructions:
@@ -61,6 +66,8 @@
 6. Bake for 10-12 minutes"></textarea>
                 </div>
             </section>
+
+
 
             <!-- Elevation Control Section -->
             <section class="elevation-section">

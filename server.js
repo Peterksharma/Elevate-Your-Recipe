@@ -282,61 +282,43 @@ function extractTitle($, website) {
 function extractIngredients($, website) {
     const ingredients = new Set();
     
-    console.log('=== STARTING INGREDIENT EXTRACTION ===');
-    console.log(`Website detected: ${website || 'unknown'}`);
+
     
     // Try multiple approaches to find ingredients
     let foundIngredients = false;
     
     // Approach 1: Try to find the ingredients section by looking for headers
-    console.log('\n--- Approach 1: Header-based extraction ---');
     const ingredientSection = findIngredientsSection($);
     if (ingredientSection) {
-        console.log('Found ingredients section, extracting...');
         extractIngredientsFromSection($, ingredientSection, ingredients);
         if (ingredients.size > 0) {
             foundIngredients = true;
-            console.log(`Found ${ingredients.size} ingredients using header-based approach`);
-            console.log('Ingredients found:', Array.from(ingredients));
+
         } else {
-            console.log('No ingredients found in header-based section');
         }
     } else {
-        console.log('No ingredients section found');
     }
     
     // Approach 2: If no ingredients found, try direct ▢ character search
     if (!foundIngredients) {
-        console.log('\n--- Approach 2: Character-based extraction ---');
         const beforeCount = ingredients.size;
         extractIngredientsByCharacter($, ingredients);
         const afterCount = ingredients.size;
         if (afterCount > beforeCount) {
             foundIngredients = true;
-            console.log(`Found ${afterCount - beforeCount} additional ingredients using character-based approach`);
-            console.log('New ingredients found:', Array.from(ingredients).slice(beforeCount));
+
         } else {
-            console.log('No additional ingredients found with character-based approach');
         }
     }
     
     // Approach 3: Fallback to general selectors
     if (!foundIngredients) {
-        console.log('\n--- Approach 3: Fallback extraction ---');
         const beforeCount = ingredients.size;
         extractIngredientsFallback($, website, ingredients);
         const afterCount = ingredients.size;
-        if (afterCount > beforeCount) {
-            console.log(`Found ${afterCount - beforeCount} additional ingredients using fallback approach`);
-            console.log('New ingredients found:', Array.from(ingredients).slice(beforeCount));
-        } else {
-            console.log('No additional ingredients found with fallback approach');
-        }
+        
     }
 
-    console.log('\n--- Filtering ingredients ---');
-    console.log(`Raw ingredients before filtering: ${ingredients.size}`);
-    console.log('Raw ingredients:', Array.from(ingredients));
 
     // Filter and sort ingredients
     const filteredIngredients = Array.from(ingredients)
@@ -422,15 +404,124 @@ function extractIngredients($, website) {
                                  !ingredient.toLowerCase().includes('before removing') &&
                                  !ingredient.toLowerCase().includes('cooling rack') &&
                                  !ingredient.toLowerCase().includes('doesn\'t matter what you use') &&
-                                 !ingredient.toLowerCase().includes('choose your favorite');
+                                 !ingredient.toLowerCase().includes('choose your favorite') &&
+                                 !ingredient.toLowerCase().includes('really amps up') &&
+                                 !ingredient.toLowerCase().includes('michelle writes') &&
+                                 !ingredient.toLowerCase().includes('biggest secrets') &&
+                                 !ingredient.toLowerCase().includes('recommends') &&
+                                 !ingredient.toLowerCase().includes('either brand') &&
+                                 !ingredient.toLowerCase().includes('rate this recipe') &&
+                                 !ingredient.toLowerCase().includes('serves') &&
+                                 !ingredient.toLowerCase().includes('baking dish') &&
+                                 !ingredient.toLowerCase().includes('equipment') &&
+                                 !ingredient.toLowerCase().includes('cooking spray') &&
+                                 !ingredient.toLowerCase().includes('parchment paper') &&
+                                 !ingredient.toLowerCase().includes('rubber spatula') &&
+                                 !ingredient.toLowerCase().includes('you may like') &&
+                                 !ingredient.toLowerCase().includes('vegan carrot cake') &&
+                                 !ingredient.toLowerCase().includes('lemon cake') &&
+                                 !ingredient.toLowerCase().includes('sugar cookies') &&
+                                 !ingredient.toLowerCase().includes('banana bread') &&
+                                 !ingredient.toLowerCase().includes('muffin recipes') &&
+                                 !ingredient.toLowerCase().includes('carrot muffins') &&
+                                 !ingredient.toLowerCase().includes('i made these') &&
+                                 !ingredient.toLowerCase().includes('yesterday') &&
+                                 !ingredient.toLowerCase().includes('crazy, i know') &&
+                                 !ingredient.toLowerCase().includes('definite winner') &&
+                                 !ingredient.toLowerCase().includes('too salty') &&
+                                 !ingredient.toLowerCase().includes('dunno if i did it wrong') &&
+                                 !ingredient.toLowerCase().includes('maybe because i cut') &&
+                                 !ingredient.toLowerCase().includes('maybe i should have cut') &&
+                                 !ingredient.toLowerCase().includes('made these for visiting') &&
+                                 !ingredient.toLowerCase().includes('added 1 cup of chopped') &&
+                                 !ingredient.toLowerCase().includes('cause i can\'t do') &&
+                                 !ingredient.toLowerCase().includes('hands down the best') &&
+                                 !ingredient.toLowerCase().includes('do have onequestion') &&
+                                 !ingredient.toLowerCase().includes('cool in the pan') &&
+                                 !ingredient.toLowerCase().includes('remove from pan') &&
+                                 !ingredient.toLowerCase().includes('michelle uses') &&
+                                 !ingredient.toLowerCase().includes('bit of water') &&
+                                 !ingredient.toLowerCase().includes('moist, gooey texture') &&
+                                 !ingredient.toLowerCase().includes('boxed mix') &&
+                                 !ingredient.toLowerCase().includes('commercial emulsifiers') &&
+                                 !ingredient.toLowerCase().includes('doesn\'t contain any') &&
+                                 !ingredient.toLowerCase().includes('essential for helping') &&
+                                 !ingredient.toLowerCase().includes('puff up in the oven') &&
+                                 !ingredient.toLowerCase().includes('pour the batter') &&
+                                 !ingredient.toLowerCase().includes('lined with parchment') &&
+                                 !ingredient.toLowerCase().includes('spread it to all four') &&
+                                 !ingredient.toLowerCase().includes('smooth the top') &&
+                                 !ingredient.toLowerCase().includes('mixture will be very thick') &&
+                                 !ingredient.toLowerCase().includes('that\'s ok') &&
+                                 !ingredient.toLowerCase().includes('better chocolate chips') &&
+                                 !ingredient.toLowerCase().includes('good-quality chocolate chips') &&
+                                 !ingredient.toLowerCase().includes('ghirardelli') &&
+                                 !ingredient.toLowerCase().includes('enjoy life') &&
+                                 !ingredient.toLowerCase().includes('fantastic in this recipe') &&
+                                 !ingredient.toLowerCase().includes('if you\'d like to reduce') &&
+                                 !ingredient.toLowerCase().includes('i\'ve had success with') &&
+                                 !ingredient.toLowerCase().includes('instead of') &&
+                                 !ingredient.toLowerCase().includes('as mentioned in the notes') &&
+                                 !ingredient.toLowerCase().includes('brownies') &&
+                                 !ingredient.toLowerCase().includes('cookies') &&
+                                 !ingredient.toLowerCase().includes('muffins') &&
+                                 !ingredient.toLowerCase().includes('cakes') &&
+                                 !ingredient.toLowerCase().includes('bread') &&
+                                 !ingredient.toLowerCase().includes('serves') &&
+                                 !ingredient.toLowerCase().includes('yield') &&
+                                 !ingredient.toLowerCase().includes('makes') &&
+                                 !ingredient.toLowerCase().includes('prep time') &&
+                                 !ingredient.toLowerCase().includes('cook time') &&
+                                 !ingredient.toLowerCase().includes('total time') &&
+                                 !ingredient.toLowerCase().includes('course') &&
+                                 !ingredient.toLowerCase().includes('cuisine') &&
+                                 !ingredient.toLowerCase().includes('calories') &&
+                                 !ingredient.toLowerCase().includes('servings') &&
+                                 !ingredient.toLowerCase().includes('minutes') &&
+                                 !ingredient.toLowerCase().includes('hours') &&
+                                 !ingredient.toLowerCase().includes('degrees') &&
+                                 !ingredient.toLowerCase().includes('fahrenheit') &&
+                                 !ingredient.toLowerCase().includes('celsius') &&
+                                 !ingredient.toLowerCase().includes('preheat') &&
+                                 !ingredient.toLowerCase().includes('bake') &&
+                                 !ingredient.toLowerCase().includes('cool') &&
+                                 !ingredient.toLowerCase().includes('store') &&
+                                 !ingredient.toLowerCase().includes('freeze') &&
+                                 !ingredient.toLowerCase().includes('thaw') &&
+                                 !ingredient.toLowerCase().includes('notes') &&
+                                 !ingredient.toLowerCase().includes('tips') &&
+                                 !ingredient.toLowerCase().includes('substitutions') &&
+                                 !ingredient.toLowerCase().includes('variations') &&
+                                 !ingredient.toLowerCase().includes('ingredient substitutions') &&
+                                 !ingredient.toLowerCase().includes('how to') &&
+                                 !ingredient.toLowerCase().includes('why') &&
+                                 !ingredient.toLowerCase().includes('because') &&
+                                 !ingredient.toLowerCase().includes('since') &&
+                                 !ingredient.toLowerCase().includes('when') &&
+                                 !ingredient.toLowerCase().includes('while') &&
+                                 !ingredient.toLowerCase().includes('until') &&
+                                 !ingredient.toLowerCase().includes('before') &&
+                                 !ingredient.toLowerCase().includes('after') &&
+                                 !ingredient.toLowerCase().includes('during') &&
+                                 !ingredient.toLowerCase().includes('allow') &&
+                                 !ingredient.toLowerCase().includes('let') &&
+                                 !ingredient.toLowerCase().includes('make sure') &&
+                                 !ingredient.toLowerCase().includes('be sure') &&
+                                 !ingredient.toLowerCase().includes('don\'t forget') &&
+                                 !ingredient.toLowerCase().includes('remember') &&
+                                 !ingredient.toLowerCase().includes('important') &&
+                                 !ingredient.toLowerCase().includes('key') &&
+                                 !ingredient.toLowerCase().includes('secret') &&
+                                 !ingredient.toLowerCase().includes('trick') &&
+                                 !ingredient.toLowerCase().includes('hint') &&
+                                 !ingredient.toLowerCase().includes('pro tip') &&
+                                 !ingredient.toLowerCase().includes('expert tip');
             // Must be reasonable length
             const reasonableLength = ingredient.length > 5 && ingredient.length < 200;
             
             const isValid = hasMeasurement && notNutrition && notConversion && reasonableLength;
             
-            if (!isValid) {
-                console.log(`Filtered out: "${ingredient}" - hasMeasurement: ${hasMeasurement}, notNutrition: ${notNutrition}, notConversion: ${notConversion}, reasonableLength: ${reasonableLength}`);
-            }
+
             
             return isValid;
         })
@@ -443,7 +534,7 @@ function extractIngredients($, website) {
 
     console.log(`\nFinal filtered ingredients: ${filteredIngredients.length}`);
     console.log('Final ingredients:', filteredIngredients);
-    console.log('=== ENDING INGREDIENT EXTRACTION ===\n');
+
     
     return filteredIngredients;
 }
@@ -576,14 +667,12 @@ function extractIngredientsFromSection($, section, ingredients) {
 }
 
 function extractIngredientsByCharacter($, ingredients) {
-    console.log('  Searching for ▢ character...');
     let foundWithCharacter = 0;
     
     // Look for elements containing the ▢ character - be more specific
     $('li, p, div, span').each((i, element) => {
         const text = $(element).text().trim();
         if (text && text.includes('▢')) {
-            console.log(`  Found text with ▢: "${text}"`);
             // Split by ▢ and process each part
             const parts = text.split('▢');
             parts.forEach(part => {
@@ -591,7 +680,6 @@ function extractIngredientsByCharacter($, ingredients) {
                 if (ingredient) {
                     ingredients.add(ingredient);
                     foundWithCharacter++;
-                    console.log(`    Added ingredient: "${ingredient}"`);
                 }
             });
         }
@@ -608,14 +696,11 @@ function extractIngredientsByCharacter($, ingredients) {
                 if (ingredient) {
                     ingredients.add(ingredient);
                     foundWithCharacter++;
-                    console.log(`    Added ingredient from word search: "${ingredient}"`);
                 }
             }
         }
     });
-    console.log(`  Found ${foundWithCharacter} ingredients with ▢ character`);
     
-    console.log('  Searching for bullet points...');
     let foundWithBullets = 0;
     // Also look for bullet points and numbered lists that contain measurements
     $('li, p, div').each((i, element) => {
@@ -625,13 +710,9 @@ function extractIngredientsByCharacter($, ingredients) {
             if (ingredient) {
                 ingredients.add(ingredient);
                 foundWithBullets++;
-                console.log(`    Added ingredient from bullet: "${ingredient}"`);
             }
         }
     });
-    console.log(`  Found ${foundWithBullets} ingredients with bullet points`);
-    
-    console.log('  Searching for measurement patterns...');
     let foundWithMeasurements = 0;
     // Look for specific ingredient patterns with measurements
     const measurementPattern = /(\d+(?:\/\d+)?)\s*(cup|cups|tbsp|tsp|teaspoon|teaspoons|tablespoon|tablespoons|oz|ounce|ounces|g|gram|grams|lb|lbs|pound|pounds)\s+/i;
@@ -643,13 +724,10 @@ function extractIngredientsByCharacter($, ingredients) {
             if (ingredient) {
                 ingredients.add(ingredient);
                 foundWithMeasurements++;
-                console.log(`    Added ingredient with measurement: "${ingredient}"`);
             }
         }
     });
-    console.log(`  Found ${foundWithMeasurements} ingredients with measurement patterns`);
-    
-    console.log('  Searching for ingredient words...');
+
     let foundWithWords = 0;
     // Look for any text that contains both a measurement and common ingredient words
     const ingredientWords = ['butter', 'sugar', 'flour', 'eggs', 'vanilla', 'baking', 'salt', 'chocolate', 'chips', 'brown', 'granulated', 'all-purpose', 'powder'];
@@ -662,12 +740,10 @@ function extractIngredientsByCharacter($, ingredients) {
                 if (ingredient) {
                     ingredients.add(ingredient);
                     foundWithWords++;
-                    console.log(`    Added ingredient with word match: "${ingredient}"`);
                 }
             }
         }
     });
-    console.log(`  Found ${foundWithWords} ingredients with ingredient words`);
 }
 
 function extractIngredientsFallback($, website, ingredients) {
@@ -775,12 +851,6 @@ app.post('/api/extract-recipe', async (req, res) => {
             extractedAt: new Date().toISOString(),
             website: website
         };
-
-        console.log('Extracted recipe:', {
-            title: recipeData.title,
-            ingredientsCount: recipeData.ingredients.length,
-            instructionsCount: recipeData.instructions.length
-        });
 
         res.json({ success: true, recipe: recipeData });
 

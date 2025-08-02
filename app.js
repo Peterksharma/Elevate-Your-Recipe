@@ -81,10 +81,7 @@ class RecipeApp {
 
     handleUrlInput(url) {
         if (url) {
-            // Show helpful message about manual extraction
-            const small = this.recipeUrlInput.nextElementSibling;
-            small.textContent = 'Click "Extract Recipe from URL" to automatically extract the recipe, or copy manually from the page.';
-            small.style.color = '#4a90e2';
+
         }
     }
 
@@ -507,13 +504,13 @@ class RecipeApp {
     }
 
     getApiUrl() {
-        // If we're running on the same server (port 3000), use relative URL
-        if (window.location.port === '3000' || window.location.hostname === 'localhost' && window.location.port === '') {
+        // If we're running locally, use relative URL
+        if (window.location.hostname === 'localhost') {
             return '';
         }
         
-        // Otherwise, use the Express server URL
-        return 'http://localhost:3000';
+        // For production (Vercel), use relative URL since frontend and backend are on same domain
+        return '';
     }
 }
 
