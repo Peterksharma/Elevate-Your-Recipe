@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
 
 // Recipe extraction patterns (same as client-side)
 const recipePatterns = {
@@ -812,6 +811,54 @@ function extractInstructions($, website) {
 
     return Array.from(instructions).filter(instruction => instruction.length > 10);
 }
+
+// Serve static files with explicit routes and proper MIME types
+app.get('/styles.css', (req, res) => {
+  res.setHeader('Content-Type', 'text/css');
+  res.sendFile(path.join(__dirname, 'styles.css'));
+});
+
+app.get('/app.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, 'app.js'));
+});
+
+app.get('/recipeAdjuster.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, 'recipeAdjuster.js'));
+});
+
+app.get('/recipeExtractor.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, 'recipeExtractor.js'));
+});
+
+app.get('/images/:file', (req, res) => {
+  const file = req.params.file;
+  const ext = file.split('.').pop().toLowerCase();
+  const mimeTypes = {
+    'png': 'image/png',
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'gif': 'image/gif',
+    'svg': 'image/svg+xml'
+  };
+  res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+  res.sendFile(path.join(__dirname, 'images', file));
+});
+
+// Fallback static file serving
+app.use(express.static('.', {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.gif') || path.endsWith('.svg')) {
+      res.setHeader('Content-Type', `image/${path.split('.').pop()}`);
+    }
+  }
+}));
 
 // API Routes
 app.get('/', (req, res) => {

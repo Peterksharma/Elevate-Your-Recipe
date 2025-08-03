@@ -8,6 +8,26 @@
   ],
   "routes": [
     {
+      "src": "/styles.css",
+      "dest": "server.js"
+    },
+    {
+      "src": "/app.js",
+      "dest": "server.js"
+    },
+    {
+      "src": "/recipeAdjuster.js",
+      "dest": "server.js"
+    },
+    {
+      "src": "/recipeExtractor.js",
+      "dest": "server.js"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "server.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "server.js"
     },

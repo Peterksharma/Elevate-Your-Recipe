@@ -504,8 +504,13 @@ class RecipeApp {
     }
 
     getApiUrl() {
-        // If we're running locally, use relative URL
-        if (window.location.hostname === 'localhost') {
+        // If we're running locally on port 5500 (Live Server), point to Express server on port 3000
+        if (window.location.hostname === 'localhost' && window.location.port === '5500') {
+            return 'http://localhost:3000';
+        }
+        
+        // If we're running locally on port 3000 (Express server), use relative URL
+        if (window.location.hostname === 'localhost' && window.location.port === '3000') {
             return '';
         }
         
