@@ -1,6 +1,6 @@
 # Elevate Your Recipe - High Altitude Baking Calculator
 
-Elevate Your Recipe is a web-based high altitude baking calculator designed to enhance your cooking experience. It works by adjusting recipes based on your elevation to ensure perfect results when baking at high altitudes. This tool is perfect for those who love to experiment with baking and want to personalize recipes they find online to the elevation they are baking at.
+Elevate Your Recipe is a web-based high altitude baking calculator designed to enhance your cooking experience. It works by adjusting recipes based on your elevation to ensure perfect results when baking at high altitudes. This tool is perfect for those who love to experiment with baking and want to personalize recipes they find online to the elevation they are baking at.1
 
 ## 🌟 Features
 
